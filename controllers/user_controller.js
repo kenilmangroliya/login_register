@@ -41,7 +41,7 @@ async function register(req, res) {
 
     otp_email(user)
 
-    // usermodel(user).save();
+    usermodel(user).save();
 
     return res.status(201).json({
         status: "Data Saved",
