@@ -1,4 +1,6 @@
+const { strict } = require("assert");
 const mongoose = require("mongoose");
+const { stringify } = require("qs");
 
 const schema = new mongoose.Schema({
     name: {
@@ -13,10 +15,10 @@ const schema = new mongoose.Schema({
     contect: {
         type: String
     },
-    // role: {
-    //     type: Boolean,
-    //     default: "user"
-    // },
+    role: {
+        type: String,
+        default: "user"
+    },
     avatar: {
         type: String,
         default: 'image/png'

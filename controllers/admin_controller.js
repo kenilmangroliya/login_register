@@ -13,7 +13,8 @@ var task_model = require('../model/task');
         const admindata = {
             name: "admin",
             email: "admin@gmail.com",
-            password: "admin@123"
+            password: "admin@123",
+            role:"admin"
         };
 
         const exiting_admin = await usermodel.findOne({ email: admindata.email })
@@ -115,7 +116,7 @@ async function exports_user(req, res) {
 
         let counter = 1;
 
-        const userdata = await usermodel.find({})
+        const userdata = await usermodel.find({role:"user"})
 
         userdata.forEach((user) => {
             user.s_no = counter;
