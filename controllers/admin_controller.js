@@ -5,6 +5,7 @@ require('dotenv').config()
 const exceljs = require('exceljs');
 
 var usermodel = require('../model/schema');
+var task_model = require('../model/task');
 
 //--------------------------------------------------------------------ADMIN REGISTER
 (async function defaltadminsignup(req, res) {
@@ -136,10 +137,15 @@ async function exports_user(req, res) {
         res.setHeader("Content_Disposition", "attatchment; filename=" + "users.xlsx")
         const data = workbook.xlsx.writeFile('users.xlsx')
 
+        workbook.xlsx.write(res)
+            .then(() => {
+                res.status(200).end()
+            })
+
         // ---------------------------------------------------task_data-----------------------------------------------------------
 
         const task_workbook = new exceljs.Workbook()
-        const task_worksheet = task_workbook.addWorksheet("My Users");
+        const task_worksheet = task_workbook.addWorksheet("user task");
 
         task_worksheet.columns = [
             { header: "s_no", key: "s_no", width: 10 },
@@ -151,7 +157,7 @@ async function exports_user(req, res) {
 
         var task_counter = 1;
 
-        const task_userdata = await usermodel.find({})
+        const task_userdata = await task_model.find({})
 
         task_userdata.forEach((task)=>{
             task.s_no = task_counter;
@@ -171,11 +177,11 @@ async function exports_user(req, res) {
             "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
         )
         res.setHeader("Content_Disposition", "attatchment; filename=" + "task_users.xlsx")
-        const data1 = workbook.xlsx.writeFile('task_users.xlsx')
+        const data1 = task_workbook.xlsx.writeFile('task_users.xlsx')
 
 
 
-        return workbook.xlsx.write(res)
+        return task_workbook.xlsx.write(res)
             .then(() => {
                 res.status(200).end()
             })
