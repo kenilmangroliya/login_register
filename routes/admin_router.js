@@ -13,4 +13,6 @@ router.post('/admin', admin_controller.verify_login);
 router.get('/alluser', authadmin, admin_controller.allusers);
 
 
+router.get('/exports_user', authadmin, admin_controller.exports_user);
+
 module.exports = router;

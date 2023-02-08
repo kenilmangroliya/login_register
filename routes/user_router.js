@@ -15,7 +15,7 @@ router.post('/regi', upload_img, usercontroller.register);    //register
 
 router.get('/verify_otp', usercontroller.verify_otp);    //verification email
 
-router.put('/resend_otp', usercontroller.resend_otp);
+router.put('/resend_otp', usercontroller.resend_otp);    // resend_otp
 
 router.post('/login', usercontroller.login);      //login
 

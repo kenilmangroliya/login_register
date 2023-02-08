@@ -104,19 +104,31 @@ async function resend_otp(req, res) {
 
     //new otp update in old otp position
     var useremail = await usermodel.findOneAndUpdate(
-        { email: req.body.email },
-        { otp: random_otp }
+        { email: req.body.email },    //find email
+        { otp: random_otp }           //set karva mate
     );
 
-    //find emaIl in database
+    // find email in database
     var find_email_otp = await usermodel.findOne({ email: req.body.email })
+    if (!find_email_otp) {
+        return res.status(201).json({
+            status: "you are ot register"
+        })
+    }
 
-    // send mail in email.id
-    otp_email(find_email_otp);
+    if (find_email_otp.verify_otp == false) {
+        otp_email(find_email_otp);
 
-    res.status(201).json({
-        status: "resend otp successfully"
-    })
+        return res.status(201).json({
+            status: "resend otp successfully"
+        })
+    }
+    else {
+        res.status(401).json({
+            status: "somting went wrong"
+        })
+    }
+
 }
 
 
@@ -136,7 +148,7 @@ async function login(req, res) {
 
         bcrypt.compare(req.body.password, compare.password, function (err, result) {
             // console.log(result);
-            console.log(compare.id);
+
             if (result == true) {
 
                 var token = jwt.sign({ _id: compare._id }, process.env.SECRET_KEY);

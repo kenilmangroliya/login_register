@@ -2,6 +2,7 @@ const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 require('dotenv').config()
 
+const exceljs = require('exceljs');
 
 var usermodel = require('../model/schema');
 
@@ -63,7 +64,7 @@ async function verify_login(req, res) {
                 var token = jwt.sign({ _id: user._id }, process.env.SECRET_KEY)
 
                 return res.status(201).json({
-                    message: "Admin Login Successful",
+                    message: "Admin Login Successfull",
                     token,
                 })
             }
@@ -94,9 +95,100 @@ async function allusers(req, res) {
 
 // deletedata
 
+//exceljs => user all data show in excel
+async function exports_user(req, res) {
+    try {
+
+        const workbook = new exceljs.Workbook();
+        const worksheet = workbook.addWorksheet("My Users");
+
+        worksheet.columns = [
+            { header: "s_no", key: "s_no", width: 10 },
+            { header: "name", key: "name", width: 10 },
+            { header: "email", key: "email", width: 10 },
+            { header: "password", key: "password", width: 10 },
+            { header: "avatar", key: "avatar", width: 10 },
+            { header: "otp", key: "otp", width: 10 },
+            { header: "verify_otp", key: "verify_otp", width: 10 },
+        ];
+
+        let counter = 1;
+
+        const userdata = await usermodel.find({})
+
+        userdata.forEach((user) => {
+            user.s_no = counter;
+            worksheet.addRow(user);
+            counter++;
+        });
+
+        worksheet.getRow(1).eachCell((cell) => {
+            cell.font = {
+                bold: true
+            };
+        })
+
+        console.log("===========>userdata", userdata);
+        res.setHeader(
+            "Content-Type",
+            "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+        )
+        res.setHeader("Content_Disposition", "attatchment; filename=" + "users.xlsx")
+        const data = workbook.xlsx.writeFile('users.xlsx')
+
+        // ---------------------------------------------------task_data-----------------------------------------------------------
+
+        const task_workbook = new exceljs.Workbook()
+        const task_worksheet = task_workbook.addWorksheet("My Users");
+
+        task_worksheet.columns = [
+            { header: "s_no", key: "s_no", width: 10 },
+            { header: "subject", key: "subject", width: 10 },
+            { header: "description", key: "description", width: 10 },
+            { header: "date", key: "date", width: 10 },
+            { header: "status", key: "status", width: 10 },
+        ];
+
+        var task_counter = 1;
+
+        const task_userdata = await usermodel.find({})
+
+        task_userdata.forEach((task)=>{
+            task.s_no = task_counter;
+            task_worksheet.addRow(task)
+            task_counter++;
+
+        })
+
+        task_worksheet.getRow(1).eachCell((cell)=>{
+            cell.font = {
+                bold: true
+            };
+        })
+
+        res.setHeader(
+            "Content-Type",
+            "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+        )
+        res.setHeader("Content_Disposition", "attatchment; filename=" + "task_users.xlsx")
+        const data1 = workbook.xlsx.writeFile('task_users.xlsx')
+
+
+
+        return workbook.xlsx.write(res)
+            .then(() => {
+                res.status(200).end()
+            })
+
+    } catch (error) {
+        console.log(error);
+    }
+}
+
 module.exports = {
     verify_login,
-    allusers
+    allusers,
+    exports_user
 };
 
 
