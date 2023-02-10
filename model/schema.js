@@ -29,6 +29,10 @@ const schema = new mongoose.Schema({
     verify_otp: {
         type: Boolean,
         default: false
+    },
+    token:{
+        type:String,
+        default:""
     }
 })
 

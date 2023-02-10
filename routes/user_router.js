@@ -8,7 +8,6 @@ require('dotenv').config()
 
 var { authuser } = require('../middlewares/verify_token')
 const upload_img = require('../middlewares/upload');
-const otp_email = require('../Email/account');
 
 
 router.post('/regi', upload_img, usercontroller.register);    //register
@@ -18,6 +17,10 @@ router.get('/verify_otp', usercontroller.verify_otp);    //verification email
 router.put('/resend_otp', usercontroller.resend_otp);    // resend_otp
 
 router.post('/login', usercontroller.login);      //login
+
+router.post('/forgot_password', usercontroller.forgot_password);      //forgot_password   send mail
+
+router.get('/reset_password', usercontroller.reset_password);      //reset_password
 
 router.get('/list', authuser, usercontroller.list);      //list 
 

@@ -8,10 +8,11 @@ const nodemailer = require('nodemailer');
 const jwt = require('jsonwebtoken');
 var fs = require('fs');
 var path = require('path');
+var randomstring = require('randomstring');
 
 var usermodel = require('../model/schema');
 var avatarpath = "/public/images/";
-var otp_email = require('../Email/account')   // otp email account
+var { otp_email, send_reset_password_mail } = require('../Email/account')   // otp email account
 
 // ---------------------------------------------REGISTER---------------------------------------------------
 
@@ -39,8 +40,8 @@ async function register(req, res) {
     }
     console.log(user);
 
-    otp_email(user)
 
+    otp_email(user)
     usermodel(user).save();
 
     return res.status(201).json({
@@ -171,6 +172,82 @@ async function login(req, res) {
     }
 }
 
+// ---------------------------------------------FORGOT PASSWORD---------------------------------------------------
+
+async function forgot_password(req, res) {
+
+
+    var userdata = await usermodel.findOne({ email: req.body.email })
+    if (userdata) {
+        const random_string = randomstring.generate();
+        // console.log(random_string);
+
+        const data = await usermodel.findOneAndUpdate(
+            { email: req.body.email },
+            {
+                $set: { token: random_string }
+            })
+
+        send_reset_password_mail(data.name, data.email, random_string)
+
+        res.status(201).json({
+            msg: "plzz check your email and reset your password"
+            // data
+        })
+    } else {
+        res.status(201).json({
+            msg: "this email does not exiting"
+        })
+    }
+}
+
+// ---------------------------------------------reset PASSWORD---------------------------------------------------
+
+async function reset_password(req, res) {
+    try {
+
+        const token = req.query.token
+        // console.log(token)
+
+        var find_token = await usermodel.findOne({ token: token })
+        if (find_token) {
+            const password = req.body.password
+            const confirm_password = req.body.confirm_password
+
+            if (password == confirm_password) {
+                var bpass = await bcrypt.hash(password, 10)                          //bcrypt password
+
+                const update_pass = await usermodel.findByIdAndUpdate(
+                    { _id: find_token._id },
+                    { $set: { password: bpass, token: "" } },
+                    { new: true }
+                )
+                return res.status(201).json({
+                    msg: "user password has been reset",
+                    update_pass
+                })
+            }
+            else {
+                return res.status(400).json({
+                    msg: "password and confirm_passwrod do not match"
+                })
+            }
+
+        }
+        else {
+            res.status(400).json({
+                msg: "your link has been expired '(plzz check your query link)'"
+            })
+        }
+
+    } catch (error) {
+        res.status(400).json({
+            msg: "error =============>", error
+        })
+    }
+}
+
+
 // ---------------------------------------------LIST---------------------------------------------------
 
 async function list(req, res) {
@@ -262,6 +339,8 @@ module.exports = {
     verify_otp,
     resend_otp,
     login,
+    forgot_password,
+    reset_password,
     list,
     update,
     deletedata,

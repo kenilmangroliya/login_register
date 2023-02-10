@@ -30,11 +30,12 @@ async function otp_email(data, res) {
 
     var mailOptions = {
         from: '<kenilmangroliya18@gmail.com>',
-        to: 'kenilmangroliya18@gmail.com', 
+        to: data.email,
         subject: 'Welcome!',
         template: 'email', // the name of the template file i.e email.handlebars
-        context:{
-            otp : data.otp
+        context: {
+            name: data.name,
+            otp: data.otp
         }
     };
 
@@ -47,35 +48,39 @@ async function otp_email(data, res) {
     });
 }
 
+//--------------------------------------SEND RESET PASSWORD MAIL------------------------------------------
 
-// async function otp_email(data, res) {             //data = user      // data = find_email_otp 
-//     var transporter = nodemailer.createTransport({
-//         host: "smtp.gmail.com",
-//         port: 587,
-//         secure: true,
-//         service: 'gmail',
-//         auth: {
-//             user: "kenilmangroliya18@gmail.com",
-//             pass: "vyyxrbisvczzgyvb"
-//         }
-//     });
+async function send_reset_password_mail(name, email, token) {             //data = user      // data = find_email_otp 
+    var transporter = nodemailer.createTransport({
+        host: "smtp.gmail.com",
+        port: 587,
+        secure: true,
+        service: 'gmail',
+        auth: {
+            user: "kenilmangroliya18@gmail.com",
+            pass: "vyyxrbisvczzgyvb"
+        }
+    });
 
-//             let mail_obj = ({
-//                 from: "kenilmangroliya18@gmail.com",
-//                 to: "kenilmangroliya18@gmail.com",
-//                 subject: "This Is Your OTP",
-//                 html: data
-//             })
+    let mail_obj = ({
+        from: "kenilmangroliya18@gmail.com",
+        to: email,
+        subject: "for reset password",
+        html: `<p> hii ${name}, please copy the link and <a href = "http://localhost:3000/reset_password?token=${token}" >reset your password </a>`
+    })
 
-//             transporter.sendMail(mail_obj, function (err, info) {
-//                 if (err) {
-//                     console.log("error", err);
-//                 }
-//                 else {
-//                     console.log("success email sent");
-//                 }
-//             })
-//         }
+    transporter.sendMail(mail_obj, function (err, info) {
+        if (err) {
+            console.log("error", err);
+        }
+        else {
+            console.log("mail has been send");
+        }
+    })
+}
 
 
-module.exports = otp_email
+module.exports = {
+    otp_email,
+    send_reset_password_mail
+}
