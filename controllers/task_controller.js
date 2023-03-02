@@ -5,6 +5,7 @@ var task_model = require('../model/task');
 //add data
 async function task(req, res) {
     try {
+
         const obj = ({
             subject: req.body.subject,
             description: req.body.description,
@@ -23,7 +24,6 @@ async function task(req, res) {
             message: 'err'
         })
     }
-
 }
 
 //update

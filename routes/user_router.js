@@ -12,7 +12,7 @@ const upload_img = require('../middlewares/upload');
 
 router.post('/regi', upload_img, usercontroller.register);    //register
 
-router.get('/verify_otp', usercontroller.verify_otp);    //verification email
+router.post('/verify_otp', usercontroller.verify_otp);    //verification email
 
 router.put('/resend_otp', usercontroller.resend_otp);    // resend_otp
 

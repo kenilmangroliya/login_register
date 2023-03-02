@@ -11,7 +11,7 @@ params.secretOrKey = process.env.SECRET_KEY
 // console.log(params.secretOrKey);
 
 passport.use(new jwtstrategy(params, function (jwt_payload, done) {
-    console.log(jwt_payload);
+    // console.log(jwt_payload);
 
     console.log('----------------passport----------------------');
     console.log('jwt_payload._id -------->', jwt_payload._id);         //undefined           

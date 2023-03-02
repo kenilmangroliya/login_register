@@ -12,7 +12,7 @@ router.post('/admin', admin_controller.verify_login);
 // all user data show
 router.get('/alluser', authadmin, admin_controller.allusers);
 
-
+//excel
 router.get('/exports_user', authadmin, admin_controller.exports_user);
 
 module.exports = router;

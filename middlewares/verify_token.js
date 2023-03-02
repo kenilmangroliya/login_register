@@ -23,12 +23,13 @@ function authuser(req, res, next) {
     })(req, res, next);
 }
 
+
 //ADMIN AUTHENTICATION
 function authadmin(req, res, next) {
     console.log('-------------------------authuser---------------------');
     passport.authenticate('jwt', { session: false }, function (err, userdata) {
         try {
-            if (err) {
+            if (err || userdata === false) {
                 console.log(err);
                 return res.status(201).json({
                     status: "invalid token"

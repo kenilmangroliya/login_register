@@ -17,6 +17,7 @@ var { otp_email, send_reset_password_mail } = require('../Email/account')   // o
 // ---------------------------------------------REGISTER---------------------------------------------------
 
 var random_otp = `${Math.floor(Math.random() * (9999 - 9000 + 1) + 1000)}`
+
 async function register(req, res) {
 
     var useremail = await usermodel.findOne({ email: req.body.email })
@@ -102,6 +103,7 @@ async function resend_otp(req, res) {
 
     //random otp generate
     var random_otp = `${Math.floor(Math.random() * (9999 - 9000 + 1) + 1000)}`;
+    console.log(random_otp);
 
     //new otp update in old otp position
     var useremail = await usermodel.findOneAndUpdate(
@@ -113,7 +115,7 @@ async function resend_otp(req, res) {
     var find_email_otp = await usermodel.findOne({ email: req.body.email })
     if (!find_email_otp) {
         return res.status(201).json({
-            status: "you are ot register"
+            status: "You Are Not Register"
         })
     }
 
@@ -126,7 +128,7 @@ async function resend_otp(req, res) {
     }
     else {
         res.status(401).json({
-            status: "somting went wrong"
+            status: "You Are Already Verified"
         })
     }
 
@@ -152,7 +154,7 @@ async function login(req, res) {
 
             if (result == true) {
 
-                var token = jwt.sign({ _id: compare._id }, process.env.SECRET_KEY);
+                var token = jwt.sign({ id: compare._id }, process.env.SECRET_KEY);
 
                 return res.status(201).json({
                     status: "Login Successfully",
@@ -207,7 +209,7 @@ async function reset_password(req, res) {
     try {
 
         const token = req.query.token
-        // console.log(token)
+        console.log(token)
 
         var find_token = await usermodel.findOne({ token: token })
         if (find_token) {
@@ -307,13 +309,14 @@ async function updateimg(req, res) {
     try {
         usermodel.findById(req.params.id, async function (err, result) {
             if (!err) {
-                fs.unlinkSync(path.join(__dirname, "..", result.avatar))
+                fs.unlinkSync(path.join(__dirname, "..", result.avatar))          //delete img
             }
         })
 
+        //new img set
         usermodel.findByIdAndUpdate(req.params.id, { avatar: avatarpath + req.file.filename }, function (err, result) {
             if (result) {
-                return res.status(201).json({
+                return res.status(201).json({   
                     status: "img update successfully"
                 })
             }
